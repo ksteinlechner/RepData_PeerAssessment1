@@ -31,12 +31,11 @@ activity <- read.csv("activity.csv")
 activity$date <- as.Date(as.character(activity$date), format = "%d/%m/%Y")
 ```
 
-
 ### First analysis - ignoring missing data (eight complete days worth of data are missing)
 
 
 ```r
-# table of steps per day with NA days removed
+#table of steps per day with NA days removed
 dailysteps <- aggregate(steps ~ date, activity, sum)
 hist(dailysteps$steps, breaks = 10, xlab = "Steps per day", main = "Plot 1")
 ```
@@ -47,7 +46,6 @@ hist(dailysteps$steps, breaks = 10, xlab = "Steps per day", main = "Plot 1")
 meanDS <- format(mean(dailysteps$steps), scientific = FALSE)
 medianDS <- median(dailysteps$steps)
 ```
-
 
 Mean number of daily steps is 10766  
 Median number of daily steps is 10765
@@ -65,10 +63,8 @@ plot(stepsperperiod, type = "l", main = "Plot 2")
 
 ```r
 maxsteps <- round(max(stepsperperiod$steps))
-maxint <- stepsperperiod[which(stepsperperiod$steps == max(stepsperperiod$steps)), 
-    1]
+maxint <- stepsperperiod[which(stepsperperiod$steps == max(stepsperperiod$steps)),1]
 ```
-
 
 The highest mean number of steps in a 5 minute period was 206 in the interval commencing at 835.
 
@@ -80,24 +76,17 @@ activna <- is.na(activity$steps)
 missing <- sum(activna)
 ```
 
-
 There are 8 complete days of missing values, totaling 2304 missing data points.  Missing days' data will replaced by the mean daily values for each interval.
 
 
 
 ```r
-# fillvec will be a vector with mean steps in place of NAs and zeros
-# otherwise.  Mean values are not rounded and so non integer values
-# indicate imputed data.
+# fillvec will be a vector with mean steps in place of NAs and zeros otherwise.  Mean values are not rounded and so non integer values indicate imputed data.
 fillvec <- is.na(activity$steps) * stepsperperiod$steps
-newdf <- activity  # copy of activity data frame to avoid overwriting original data file
+newdf <- activity # copy of activity data frame to avoid overwriting original data file
 
 # set NAs to zero, then merge fillvec with original data
-for (i in 1:17568) {
-    if (activna[i] == TRUE) {
-        newdf$steps[i] <- 0
-    }
-}
+for(i in 1:17568){if(activna[i] == TRUE){newdf$steps[i] <- 0}}
 newdf$steps <- newdf$steps + fillvec
 
 newds <- aggregate(steps ~ date, newdf, sum)
@@ -111,7 +100,6 @@ newmeanDS <- format(mean(newds$steps), scientific = FALSE)
 newmedianDS <- format(median(newds$steps), scientific = FALSE)
 ```
 
-
 After replacing NAs, Mean number of daily steps is 10766 and median number of daily steps is 10766 - previously 10766 and 10765 respectively.
 
 ## Comparison of activity patterns between weekdays and weekends
@@ -121,14 +109,14 @@ After replacing NAs, Mean number of daily steps is 10766 and median number of da
 days <- weekdays(newdf$date)
 weekend <- as.logical((days == "Saturday") + (days == "Sunday"))
 
-wdactivity <- newdf[!weekend, ]
-weactivity <- newdf[weekend, ]
+wdactivity <- newdf[!weekend,]
+weactivity <- newdf[weekend,]
 
 wdsteps <- aggregate(steps ~ interval, wdactivity, mean)
 westeps <- aggregate(steps ~ interval, weactivity, mean)
 
 
-par(mfrow = c(2, 1), mar = c(4, 4, 2, 2))
+par(mfrow = c(2,1), mar = c(4,4,2,2))
 plot(westeps, type = "l", xlab = "", ylab = "Weekend", main = "Plot 4 - Mean number of steps in 5 minute intervals")
 plot(wdsteps, type = "l", ylab = "Weekdays")
 ```
@@ -136,11 +124,9 @@ plot(wdsteps, type = "l", ylab = "Weekdays")
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 ```r
-
-meanwd <- round(mean(wdsteps$steps), 2)
-meanwe <- round(mean(westeps$steps), 2)
+meanwd <- round(mean(wdsteps$steps),2)
+meanwe <- round(mean(westeps$steps),2)
 ```
-
 
 
 Mean number of steps per 5 minute interval is 35.61 during the week compared with 42.37 at weekends.  Plot 4 shows that while weekends start more slowly, activity is clearly higher throughout the day.
